@@ -15,5 +15,12 @@
     "cross-fetch": "^3.1.6",
     "node-fetch": "^2.6.11",
     "openai": "^3.2.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.1",
+    "@babel/preset-env": "^7.22.2",
+    "babel-loader": "^9.1.2",
+    "webpack": "^5.84.1",
+    "webpack-cli": "^5.1.1"
   }
 }
