@@ -130,4 +130,4 @@ dist
 .pnp.*
 
 # Extras
-/test.js
+test.js
