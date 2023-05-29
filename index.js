@@ -8,15 +8,18 @@ class GeniusGPT {
     this.apiKey = options.apiKey;
     this.temperature = options.temperature || 0.8;
     this.maxTokens = options.maxTokens || 50;
-    this.topP = options.topP || 0.8; // Top-p sampling parameter
+    this.cacheEnabled = options.cacheEnabled !== undefined ? options.cacheEnabled : true;
+    this.rateLimitingEnabled = options.rateLimitingEnabled !== undefined ? options.rateLimitingEnabled : true;
+    this.errorHandlingEnabled = options.errorHandlingEnabled !== undefined ? options.errorHandlingEnabled : true;
+    this.topPSamplingEnabled = options.topPSamplingEnabled !== undefined ? options.topPSamplingEnabled : false;
     this.cache = new Map(); // Cache for storing previous responses
     this.rateLimiter = new Bottleneck({ maxConcurrent: 1, minTime: 1000 }); // Rate limiter to avoid API rate limits
   }
 
   async textGeneration(prompt) {
     const cacheKey = prompt.toLowerCase(); // Use prompt as cache key (case-insensitive)
-    if (this.cache.has(cacheKey)) {
-      // Return response from cache if available
+    if (this.cacheEnabled && this.cache.has(cacheKey)) {
+      // Return response from cache if available and caching is enabled
       return this.cache.get(cacheKey);
     }
 
@@ -24,7 +27,6 @@ class GeniusGPT {
       prompt,
       max_tokens: this.maxTokens,
       temperature: this.temperature,
-      top_p: this.topP,
     };
 
     const requestOptions = {
@@ -39,23 +41,35 @@ class GeniusGPT {
     const apiUrl = `https://api.openai.com/v1/engines/${this.model}/completions`;
 
     try {
-      // Use rate limiter to control API requests
-      const response = await this.rateLimiter.schedule(() =>
-        fetch(apiUrl, requestOptions).then((res) => res.json())
-      );
+      let response;
+
+      if (this.rateLimitingEnabled) {
+        // Use rate limiter to control API requests if rate limiting is enabled
+        response = await this.rateLimiter.schedule(() => fetch(apiUrl, requestOptions).then((res) => res.json()));
+      } else {
+        response = await fetch(apiUrl, requestOptions).then((res) => res.json());
+      }
 
       if (response.choices && response.choices.length > 0) {
         const generatedText = response.choices[0].text.trim();
 
-        // Store response in cache
-        this.cache.set(cacheKey, generatedText);
+        if (this.cacheEnabled) {
+          // Store response in cache if caching is enabled
+          this.cache.set(cacheKey, generatedText);
+        }
 
         return generatedText;
       } else {
         throw new Error('Empty response from the API');
       }
     } catch (error) {
-      throw new Error(`An error occurred: ${error.message}`);
+      if (this.errorHandlingEnabled) {
+        // Throw error if error handling is enabled
+        throw new Error(`An error occurred: ${error.message}`);
+      } else {
+        // Return empty string if error handling is disabled
+        return '';
+      }
     }
   }
 
