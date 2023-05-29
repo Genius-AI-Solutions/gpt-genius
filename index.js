@@ -8,6 +8,7 @@ class GeniusGPT {
     this.apiKey = options.apiKey;
     this.temperature = options.temperature || 0.8;
     this.maxTokens = options.maxTokens || 50;
+    this.topP = options.topP || 0.8; // Top-p sampling parameter
     this.cache = new Map(); // Cache for storing previous responses
     this.rateLimiter = new Bottleneck({ maxConcurrent: 1, minTime: 1000 }); // Rate limiter to avoid API rate limits
   }
@@ -23,6 +24,7 @@ class GeniusGPT {
       prompt,
       max_tokens: this.maxTokens,
       temperature: this.temperature,
+      top_p: this.topP,
     };
 
     const requestOptions = {
