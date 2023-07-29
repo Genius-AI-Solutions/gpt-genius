@@ -4,29 +4,36 @@ const mongoose = require('mongoose');
 const versionRoutes = require('./routes/versionRoutes');
 const healthRoutes = require('./routes/healthRoutes');
 const apiKeysRoutes = require('./routes/apiKeys');
-const keyGenerationRoutes = require('./routes/keyGenerationRoutes'); // New line
+const keyGenerationRoutes = require('./routes/keyGenerationRoutes');
 
-// Set up default mongoose connection to a MongoDB server
 const mongoDB = process.env.MONGODB_URI;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Get the default connection
 const db = mongoose.connection;
 
-// Bind connection to error event (to get notification of connection errors)
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(express.json());  // This is to handle JSON requests
-
+app.use(express.json());
 app.use('/api/version', versionRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/keys', apiKeysRoutes);
-app.use('/api/keygen', keyGenerationRoutes);  // New line
+app.use('/api/keygen', keyGenerationRoutes);
 
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
-  console.log(process.env.MONGODB_URI);
+  console.log('---------------------------------------');
+  console.log('🚀 Server successfully started!');
+  console.log(`📍 Listening on: http://localhost:${port}`);
+  
+  if(process.env.MONGODB_URI) {
+    console.log(`💾 Connected to MongoDB at: ${process.env.MONGODB_URI}`);
+  } else {
+    console.log('⚠️  MongoDB URI not set in .env file');
+  }
+  
+  console.log('---------------------------------------');
+  console.log('⚠️  DISCLAIMER: This server startup information is for debugging purposes only. In a production environment, sensitive information such as database connections should be securely stored and access should be limited.');
 });
+
