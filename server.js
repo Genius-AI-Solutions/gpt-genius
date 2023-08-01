@@ -5,6 +5,7 @@ const versionRoutes = require('./routes/versionRoutes');
 const healthRoutes = require('./routes/healthRoutes');
 const apiKeysRoutes = require('./routes/apiKeys');
 const keyGenerationRoutes = require('./routes/keyGenerationRoutes');
+const userRoutes = require('./routes/userRoutes'); // Add this line to require the user routes
 
 const mongoDB = process.env.MONGODB_URI;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -21,6 +22,7 @@ app.use('/api/version', versionRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/keys', apiKeysRoutes);
 app.use('/api/keygen', keyGenerationRoutes);
+app.use('/api/users', userRoutes); // Add this line to use the user routes
 
 app.listen(port, () => {
   console.log('---------------------------------------');
@@ -36,4 +38,3 @@ app.listen(port, () => {
   console.log('---------------------------------------');
   console.log('⚠️  DISCLAIMER: This server startup information is for debugging purposes only. In a production environment, sensitive information such as database connections should be securely stored and access should be limited.');
 });
-
