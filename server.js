@@ -8,6 +8,10 @@ const keyGenerationRoutes = require('./routes/keyGenerationRoutes');
 const userRoutes = require('./routes/userRoutes'); // Require the user routes
 const settingsRoutes = require('./routes/settingRoutes'); // Require the settings routes
 const Settings = require('./models/Settings');
+const openaiRoutes = require('./routes/openaiRoutes');
+const requestAnalytics = require('./routes/analytics/requestAnalytics');
+const userAnalytics = require('./routes/analytics/userAnalytics');
+const dataSourceAnalytics = require('./routes/analytics/dataSourceAnalytics');
 
 const mongoDB = process.env.MONGODB_URI;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -41,6 +45,10 @@ app.use('/api/keys', apiKeysRoutes);
 app.use('/api/keygen', keyGenerationRoutes);
 app.use('/api/users', userRoutes); // Use the user routes
 app.use('/api/settings', settingsRoutes); // Use the settings routes
+app.use('/api/openai', openaiRoutes);
+app.use('/requests', requestAnalytics);
+app.use('/users', userAnalytics);
+app.use('/dataSources', dataSourceAnalytics);
 
 app.listen(port, () => {
   console.log('---------------------------------------');
